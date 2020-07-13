@@ -1,7 +1,7 @@
 import os
 from collections import defaultdict
 from operator import getitem
-
+from prettytable import PrettyTable
 
 class calmAP(object):
     def __init__(self, gt_path, pred_path, thresh=0.5):
@@ -16,6 +16,7 @@ class calmAP(object):
             'sofa', 'tap', 'tincan', 'tvmonitor', 'vase', 'wastecontainer',
             'windowblind'
         ]
+        self.table = PrettyTable(['类别','AP'])
 
     def run(self):
         gt_map, gt_counter = self.init_gt()
@@ -126,9 +127,11 @@ class calmAP(object):
             for i, ele in enumerate(tp):
                 prec.append(tp[i] / (tp[i] + fp[i]))
             ap = self.calAP(rec, prec)
+            self.table.add_row([class_name,round(ap,2)])
             sumAp.append(ap)
         mAp = sum(sumAp) / num_classes
-        print(mAp)
+        self.table.add_row(['mAP',round(mAp,2)])
+        print(self.table)
 
     def init_gt(self):
         gt_counter = defaultdict(int)
